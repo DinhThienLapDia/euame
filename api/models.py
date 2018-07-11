@@ -64,7 +64,7 @@ class EmailPhoneUserManager(models.Manager):
 
         if "@" in email_or_phone:
             email_or_phone = self.normalize_email(email_or_phone)
-            
+
             sg = sendgrid.SendGridAPIClient(apikey='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')
             from_email = Email("verification@euame.com")
             to_email = Email(email_or_phone)
@@ -91,6 +91,7 @@ class EmailPhoneUserManager(models.Manager):
         user = User.objects.create_user(username=username,password=password)
         user = self.model(
             user=user,
+            email_or_phone=email_or_phone,
             email=email,
             phone=phone,
             fullname=fullname,
@@ -120,6 +121,21 @@ class UserAccount(models.Model):
 
     """ Abstract User with the same behaviour as Django's default User."""
     user = models.OneToOneField(User, on_delete=models.CASCADE,blank=True, null=True)
+
+    email_or_phone = models.CharField(
+        _('email or phone'), max_length=255, unique=True, db_index=True, null= True,
+        help_text=_('Required. 255 characters or fewer. Letters, digits and '
+                    '@/./+/-/_ only.'),
+        validators=[validators.RegexValidator(
+            r'^[\w.@+-]+$', _(
+                'Enter a valid username. '
+                'This value may contain only letters, numbers '
+                'and @/./+/-/_ characters.'
+            ), 'invalid'),
+        ],
+        error_messages={
+            'unique': _("A user with that username already exists."),
+        })
 
     email = models.EmailField(_('email'), max_length=254, blank=True)
     phone = models.CharField(_('phone'), max_length=255, blank=True)

@@ -22,7 +22,7 @@ urlpatterns = [
     re_path(r'^admin/', admin.site.urls),
     re_path(r'^api/v1/useraccount/signup/', api.AccountSignup.as_view()),
     re_path(r'^api/v1/useraccount/signin/', api.AccountSignin.as_view()),
-    re_path(r'^api/v1/useraccount/signup/', api.AccountSignout.as_view()),
+    re_path(r'^api/v1/useraccount/signout/', api.AccountSignout.as_view()),
     re_path(r'^api/v1/useraccount/lostpassword/', api.LostPassword.as_view()),
     re_path(r'^api/v1/useraccount/verifyaccount/', api.VerifyAccount.as_view()),
     re_path(r'^api/v1/useraccount/editaccount/', api.EditAccount.as_view()),
@@ -30,4 +30,5 @@ urlpatterns = [
     re_path(r'^api/v1/useraccount/getaccountdetails/', api.GetAccountDetails.as_view()),
     re_path(r'^api/v1/useraccount/lostpasswordnewpassword/', api.LostPasswordNewPassword.as_view()),
     re_path(r'^api/v1/useraccount/lostpasswordverifycode/', api.LostPasswordVerifyCode.as_view()),
+    re_path(r'^api/v1/useraccount/changepassword/', api.ChangePassword.as_view()),
 ]
