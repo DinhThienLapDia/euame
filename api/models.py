@@ -65,7 +65,7 @@ class EmailPhoneUserManager(models.Manager):
         if "@" in email_or_phone:
             email_or_phone = self.normalize_email(email_or_phone)
             
-            sg = sendgrid.SendGridAPIClient(apikey='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')
+            sg = sendgrid.SendGridAPIClient(apikey='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')
             from_email = Email("verification@euame.com")
             to_email = Email(email_or_phone)
             signup_code = datetime.now().strftime('%M%m%H')
