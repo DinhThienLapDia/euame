@@ -170,6 +170,8 @@ class UserAccount(models.Model):
 
     signup_code = models.CharField(_('signup_code'), max_length= 254, blank=False,null=True)
 
+    verify_code = models.CharField(_('verify_code'), max_length= 254, blank=False,null=True)
+
     objects = EmailPhoneUserManager()
 
     REQUIRED_FIELDS = []
