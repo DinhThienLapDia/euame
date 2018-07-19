@@ -15,7 +15,7 @@ from datetime import datetime
 from .models import UserAccount
 
 class AccountSignup(APIView):
-    #authentication_classes = 
+    #authentication_classes = TokenAuthentication
     #permision_classes = 
     #rendered_classes = 
     def post(self, request, format = None):
@@ -220,5 +220,53 @@ class ChangePassword(APIView):
                 return Response({'status':"missing_params"}, status=701)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class ResendCodeAPIView):
+    #authentication_classes = 
+    #permision_classes = 
+    #rendered_classes = 
+    def post(self, request, format = None):
+        try:
+            if request.META.get('CONTENT_TYPE') == "application/json":
+                if "username" in request.data:
+                    if User.objects.filter(username=request.data['username']).exists():
+                        verify_code = "1234"
+                        return Response({'status':"success",'verify_code':verify_code}, status=status.HTTP_200_OK)
+                    else:
+                        return Response({'status':"username_incorrect"}, status=590)
+                else:
+                    return Response({'status':"missing_params"},status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print(e)
+            return Response({'status':"server_exception",'details':str(e)}, status=501)
+
+class DeactivateAccount(APIView):
+    #authentication_classes = 
+    #permision_classes = 
+    #rendered_classes = 
+    def post(self, request, format = None):
+        if request.META.get('CONTENT_TYPE') == "application/json":
+            if (request.data['username'] and request.data['password']):
+                pass
+            else:
+                return Response({'status':"missing_params"}, status=701)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class DeleteAccount(APIView):
+    #authentication_classes = 
+    #permision_classes = 
+    #rendered_classes = 
+    def post(self, request, format = None):
+        if request.META.get('CONTENT_TYPE') == "application/json":
+            if (request.data['username'] and request.data['password']):
+                pass
+            else:
+                return Response({'status':"missing_params"}, status=701)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
 
 
