@@ -221,7 +221,7 @@ class ChangePassword(APIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-class ResendCodeAPIView):
+class ResendCode(APIView):
     #authentication_classes = 
     #permision_classes = 
     #rendered_classes = 

@@ -12,9 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from datetime import datetime
 
-import sendgrid
-import os
-from sendgrid.helpers.mail import Email, Content, Mail
+from mailjet_rest import Client
 
 
 class EmailPhoneUserManager(models.Manager):
@@ -65,17 +63,36 @@ class EmailPhoneUserManager(models.Manager):
         if "@" in email_or_phone:
             email_or_phone = self.normalize_email(email_or_phone)
 
-            sg = sendgrid.SendGridAPIClient(apikey='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')
-            from_email = Email("verification@euame.com")
-            to_email = Email(email_or_phone)
+            api_key = 'a0447053ba64e12d58c6f18ee42bcfc5'
+            api_secret = '03d7d5b3791148902dcffd64edb62dbb'
+            mailjet = Client(auth=(api_key, api_secret), version='v3.1')
+            
             signup_code = datetime.now().strftime('%M%m%H')
-            subject = "Sign up verification code from EUAME"
-            content = Content("text/plain", "Your sign up verification code is "+signup_code)
-            mail = Mail(from_email, subject, to_email, content)
-            response = sg.client.mail.send.post(request_body=mail.get())
-            print(response.status_code)
-            print(response.body)
-            print(response.headers)
+
+            data = {
+            'Messages': [
+                    {
+                        "From": {
+                                "Email": "vneroica@gmail.com",
+                                "Name": "euame"
+                        },
+                        "To": [
+                                {
+                                        "Email": email_or_phone,
+                                        "Name": fullname
+                                }
+                        ],
+                        "Subject": "Your euame account verification code",
+                        "TextPart": "your code is: " + signup_code,
+                        "HTMLPart": "<h3>Dear new customer, your account verification code is:" + signup_code +"</h3><br />please fill your code in the verfication screen of euame app"
+                    }
+                    ]
+            }
+
+            result = mailjet.send.create(data=data)
+            print(result.status_code)
+            print(result.json())
+                    
 
             username, email, phone = (email_or_phone, email_or_phone, "")
 
