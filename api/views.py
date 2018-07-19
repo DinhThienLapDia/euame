@@ -83,7 +83,7 @@ class AccountSignout(APIView):
                     account.save()
                     return Response({'status':"success"}, status=status.HTTP_200_OK)
                 else:
-                    return Response({'status':"missing_params"}, status=701)
+                    return Response({'status':"missing_params"}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:

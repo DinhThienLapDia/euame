@@ -14,6 +14,8 @@ from datetime import datetime
 
 from mailjet_rest import Client
 
+from twilio.rest import Client as Twilio
+
 
 class EmailPhoneUserManager(models.Manager):
 
@@ -44,6 +46,8 @@ class EmailPhoneUserManager(models.Manager):
         except ImportError:
             pass
 
+        print(phone)
+
         return phone
 
     def _create_user(self, email_or_phone, password, fullname, gender,birthday,
@@ -66,7 +70,7 @@ class EmailPhoneUserManager(models.Manager):
             api_key = 'a0447053ba64e12d58c6f18ee42bcfc5'
             api_secret = '03d7d5b3791148902dcffd64edb62dbb'
             mailjet = Client(auth=(api_key, api_secret), version='v3.1')
-            
+
             signup_code = datetime.now().strftime('%M%m%H')
 
             data = {
@@ -101,7 +105,17 @@ class EmailPhoneUserManager(models.Manager):
             username, email = (email_or_phone, "")
 
             signup_code = datetime.now().strftime('%M%m%H')
+            account_sid = 'AC4d3a68850fdbae49d26518b29c1e0404'
+            auth_token = '65890d206e6755cf15afc2b3b5e6c0ee'
+            client = Twilio(account_sid, auth_token)
 
+            message = client.messages.create(
+                              body='your euame verification code: ' + signup_code,
+                              from_='+12243081374',
+                              to=phone
+                          )
+            print(message.sid)
+            
         now = timezone.now()
         is_active = extra_fields.pop("is_active", False)
 
