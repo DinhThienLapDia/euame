@@ -31,9 +31,9 @@ class AccountSignup(APIView):
                             birthday = datetime.strptime(request.data['birthday'],"%d%m%Y").date()
                         except Exception as e:
                             return Response({'status':"bad_request","details":str(e)}, status=400)
-                        UserAccount.objects._create_user(request.data['username'], request.data['password'], request.data['fullname'], request.data['gender'],
+                        account = UserAccount.objects._create_user(request.data['username'], request.data['password'], request.data['fullname'], request.data['gender'],
                         birthday, False, False)
-                        return Response({'status':"success"}, status=status.HTTP_200_OK)
+                        return Response({'status':"success",'userid':account.pk},, status=status.HTTP_200_OK)
                 else:
                     return Response({'status':"missing_params"}, status=589)
             else:
@@ -69,6 +69,7 @@ class AccountSignin(APIView):
         except Exception as e:
             print(e)
             return Response({'status':"server_exception"}, status=501)
+
 class AccountSignout(APIView):
     #authentication_classes = 
     #permision_classes = 
