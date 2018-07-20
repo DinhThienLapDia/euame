@@ -119,8 +119,8 @@ class VerifyAccount(APIView):
     def post(self, request, format = None):
         try:
             if request.META.get('CONTENT_TYPE') == "application/json":
-                if "code" in request.data:
-                    if request.data['code'] == "1234":
+                if "code" in request.data and "userid" in request.data:
+                    if request.data['code'] == UserAccount.objects.get(pk=request.data['userid']).signup_code:
                         return Response({'status':"success"}, status=status.HTTP_200_OK)
                     else:
                         return Response({'status':"code_incorrect"}, status=status.HTTP_200_OK)
