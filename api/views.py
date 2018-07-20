@@ -33,7 +33,7 @@ class AccountSignup(APIView):
                             return Response({'status':"bad_request","details":str(e)}, status=400)
                         account = UserAccount.objects._create_user(request.data['username'], request.data['password'], request.data['fullname'], request.data['gender'],
                         birthday, False, False)
-                        return Response({'status':"success",'userid':account.pk},, status=status.HTTP_200_OK)
+                        return Response({'status':"success",'userid':account.pk}, status=status.HTTP_200_OK)
                 else:
                     return Response({'status':"missing_params"}, status=589)
             else:
