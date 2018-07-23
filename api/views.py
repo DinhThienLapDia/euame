@@ -121,7 +121,8 @@ class LostPassword(APIView):
                     }
                     ]
                     }
-                        email_content['Messages'][0]['To'][0]['email'] = request.data['username']
+                        email_content['Messages'][0]['To'][0]['Email'] = request.data['username']
+                        print(email_content['Messages'][0]['To'][0]['Email'])
                         send_email(content=email_content)
                         return Response({'status':"success"}, status=status.HTTP_200_OK)
                     if request.data['username_type'] == "phone":
