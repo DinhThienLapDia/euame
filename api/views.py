@@ -244,7 +244,7 @@ class ChangePassword(APIView):
         try:
             if request.META.get('CONTENT_TYPE') == "application/json":
                 if "newpassword" in request.data and "userid" in request.data and "oldpassword" in request.data:
-                    user = User.objects.get(pk=int(request.data['id']))
+                    user = User.objects.get(pk=int(request.data['userid']))
                     if user.check_password(request.data['oldpassword']):
                         user.set_password(request.data['newpassword'])
                         user.save()
