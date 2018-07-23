@@ -2,7 +2,7 @@ from mailjet_rest import Client
 
 from twilio.rest import Client as Twilio
 
-def send_email(email,content):
+def send_email(content):
     api_key = 'a0447053ba64e12d58c6f18ee42bcfc5'
     api_secret = '03d7d5b3791148902dcffd64edb62dbb'
     mailjet = Client(auth=(api_key, api_secret), version='v3.1')
