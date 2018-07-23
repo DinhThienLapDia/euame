@@ -265,7 +265,7 @@ class Friend(models.Model):
     """Model to represent friendship"""
     to_profile = models.ForeignKey(UserProfile, models.CASCADE, related_name='friends')
     from_profile = models.ForeignKey(UserProfile, models.CASCADE, related_name='_unused_friend_relation')
-    created = models.DateTimeField(default=timezone.now())
+    created = models.DateTimeField(default=timezone.now)
 
     class Meta:
         verbose_name = _('Friend')
