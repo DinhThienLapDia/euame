@@ -247,7 +247,7 @@ class UserProfile(models.Model):
     profile_general = "general"
     profile_choices = (('profile_family','family'),('profile_professional','professional'),('profile_mask','mask'),('profile_general','general'))
 
-    profile_type = models.CharField(choices=profile_choices)
+    profile_type = models.CharField(choices=profile_choices,max_length=255)
     account = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
 
     is_active = models.BooleanField(
@@ -259,7 +259,7 @@ class UserProfile(models.Model):
         return self.profile_type
 
     class Meta:
-        ordering = ('profile_type')
+        ordering = ["profile_type"]
 
 class Friend(models.Model):
     """Model to represent friendship"""
