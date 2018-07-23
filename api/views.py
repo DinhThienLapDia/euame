@@ -241,13 +241,23 @@ class ChangePassword(APIView):
     #permision_classes = 
     #rendered_classes = 
     def post(self, request, format = None):
-        if request.META.get('CONTENT_TYPE') == "application/json":
-            if (request.data['username'] and request.data['password']):
-                pass
+        try:
+            if request.META.get('CONTENT_TYPE') == "application/json":
+                if "newpassword" in request.data and "userid" in request.data and "oldpassword" in request.data:
+                    user = User.objects.get(pk=int(request.data['id']))
+                    if user.check_password(request.data['oldpassword']):
+                        user.set_password(request.data['newpassword'])
+                        user.save()
+                        return Response({'status':"success"}, status=status.HTTP_200_OK)
+                    else:
+                        return Response('status':"password_incorrect", status=400)
+                else:
+                    return Response({'status':"missing_params"}, status=400)
             else:
-                return Response({'status':"missing_params"}, status=400)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print(e)
+            return Response({'status':"server_exception",'details':str(e)}, status=501)
 
 class ResendCode(APIView):
     #authentication_classes = 
