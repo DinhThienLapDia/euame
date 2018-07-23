@@ -250,7 +250,7 @@ class ChangePassword(APIView):
                         user.save()
                         return Response({'status':"success"}, status=status.HTTP_200_OK)
                     else:
-                        return Response('status':"password_incorrect", status=400)
+                        return Response({'status':"password_incorrect"}, status=400)
                 else:
                     return Response({'status':"missing_params"}, status=400)
             else:
