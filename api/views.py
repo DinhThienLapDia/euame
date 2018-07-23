@@ -111,7 +111,7 @@ class LostPassword(APIView):
                         },
                         "To": [
                                 {
-                                        "Email": request.data['username'],
+                                        "Email": %s,
                                         "Name": "Euame Customer"
                                 }
                         ],
@@ -120,7 +120,7 @@ class LostPassword(APIView):
                         "HTMLPart": "<h3>Dear new customer, your account verification code is:" + signup_code +"</h3><br />please fill your code in the verfication screen of euame app"
                     }
                     ]
-                    }
+                    } %(request.data['username'])
 
                         send_email(content=email_content)
                         return Response({'status':"success"}, status=status.HTTP_200_OK)
