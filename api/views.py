@@ -165,7 +165,9 @@ class LostPasswordNewPassword(APIView):
         try:
             if request.META.get('CONTENT_TYPE') == "application/json":
                 if "newpassword" in request.data and "username" in request.data:
-                    User.objects.get(username=request.data['username']).set_password(request.data['newpassword'])
+                    user = User.objects.get(username=request.data['username'])
+                    user.set_password(request.data['newpassword'])
+                    user.save()
                     return Response({'status':"success"}, status=status.HTTP_200_OK)
                 else:
                     return Response({'status':"missing_params"}, status=400)
