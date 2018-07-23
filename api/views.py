@@ -13,6 +13,7 @@ from rest_framework.response import Response
 from datetime import datetime
 
 from .models import UserAccount
+from .utils import send_email, send_sms
 
 class AccountSignup(APIView):
     #authentication_classes = TokenAuthentication
@@ -98,12 +99,35 @@ class LostPassword(APIView):
     def post(self, request, format = None):
         try:
             if request.META.get('CONTENT_TYPE') == "application/json":
-                if "username" in request.data:
-                    if User.objects.filter(username=request.data['username']).exists():
-                        verify_code = "1234"
-                        return Response({'status':"success",'verify_code':verify_code}, status=status.HTTP_200_OK)
-                    else:
-                        return Response({'status':"username_incorrect"}, status=590)
+                if "username" in request.data and "username_type" in request.data:
+                    signup_code = UserAccount.objects.get(email_or_phone=request.data['username']).signup_code
+                    if request.data['username_type'] == "email":
+                        email_content = {
+                    'Messages': [
+                    {
+                        "From": {
+                                "Email": "vneroica@gmail.com",
+                                "Name": "euame"
+                        },
+                        "To": [
+                                {
+                                        "Email": request.data['username'],
+                                        "Name": "Euame Customer"
+                                }
+                        ],
+                        "Subject": "Your euame account recovery code",
+                        "TextPart": "your recovery code is: " + signup_code,
+                        "HTMLPart": "<h3>Dear new customer, your account verification code is:" + signup_code +"</h3><br />please fill your code in the verfication screen of euame app"
+                    }
+                    ]
+                    }
+
+                        send_email(content=email_content)
+                        return Response({'status':"success"}, status=status.HTTP_200_OK)
+                    if request.data['username_type'] == "phone":
+                        content = "your verification code is " + signup_code 
+                        send_sms(phone_number=request.data['username'],content=content)
+                        return Response({'status':"success"}, status=status.HTTP_200_OK)
                 else:
                     return Response({'status':"missing_params"},status=status.HTTP_400_BAD_REQUEST)
             else:
@@ -143,7 +167,7 @@ class LostPasswordNewPassword(APIView):
                     User.objects.get(username=request.data['username']).set_password(request.data['newpassword']).save()
                     return Response({'status':"code_incorrect"}, status=status.HTTP_200_OK)
                 else:
-                    return Response({'status':"missing_params"}, status=701)
+                    return Response({'status':"missing_params"}, status=400)
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
@@ -157,13 +181,13 @@ class LostPasswordVerifyCode(APIView):
     def post(self, request, format = None):
         try:
             if request.META.get('CONTENT_TYPE') == "application/json":
-                if "code" in request.data:
-                    if request.data['code'] == "1234":
+                if "code" in request.data and "username" in request.data:
+                    if request.data['code'] == UserAccount.objects.get(email_or_phone=request.data['username']).signup_code:
                         return Response({'status':"success"}, status=status.HTTP_200_OK)
                     else:
                         return Response({'status':"code_incorrect"}, status=status.HTTP_200_OK)
                 else:
-                    return Response({'status':"missing_params"}, status=701)
+                    return Response({'status':"missing_params"}, status=400)
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
@@ -179,7 +203,7 @@ class GetAccountDetails(APIView):
             if (request.data['username'] and request.data['password']):
                 pass
             else:
-                return Response({'status':"missing_params"}, status=701)
+                return Response({'status':"missing_params"}, status=400)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -192,7 +216,7 @@ class EditAccount(APIView):
             if (request.data['username'] and request.data['password']):
                 pass
             else:
-                return Response({'status':"missing_params"}, status=701)
+                return Response({'status':"missing_params"}, status=400)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -205,7 +229,7 @@ class AccountSetting(APIView):
             if (request.data['username'] and request.data['password']):
                 pass
             else:
-                return Response({'status':"missing_params"}, status=701)
+                return Response({'status':"missing_params"}, status=400)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -218,7 +242,7 @@ class ChangePassword(APIView):
             if (request.data['username'] and request.data['password']):
                 pass
             else:
-                return Response({'status':"missing_params"}, status=701)
+                return Response({'status':"missing_params"}, status=400)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -252,7 +276,7 @@ class DeactivateAccount(APIView):
             if (request.data['username'] and request.data['password']):
                 pass
             else:
-                return Response({'status':"missing_params"}, status=701)
+                return Response({'status':"missing_params"}, status=400)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -265,9 +289,49 @@ class DeleteAccount(APIView):
             if (request.data['username'] and request.data['password']):
                 pass
             else:
-                return Response({'status':"missing_params"}, status=701)
+                return Response({'status':"missing_params"}, status=400)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class ActivateProfile(APIView):
+    #authentication_classes = 
+    #permision_classes = 
+    #rendered_classes = 
+    def post(self, request, format = None):
+        if request.META.get('CONTENT_TYPE') == "application/json":
+            if (request.data['username'] and request.data['password']):
+                pass
+            else:
+                return Response({'status':"missing_params"}, status=400)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class SendProfileCode(APIView):
+    #authentication_classes = 
+    #permision_classes = 
+    #rendered_classes = 
+    def post(self, request, format = None):
+        if request.META.get('CONTENT_TYPE') == "application/json":
+            if (request.data['username'] and request.data['password']):
+                pass
+            else:
+                return Response({'status':"missing_params"}, status=400)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class AddFriend(APIView):
+    #authentication_classes = 
+    #permision_classes = 
+    #rendered_classes = 
+    def post(self, request, format = None):
+        if request.META.get('CONTENT_TYPE') == "application/json":
+            if (request.data['username'] and request.data['password']):
+                pass
+            else:
+                return Response({'status':"missing_params"}, status=400)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
 
 
 

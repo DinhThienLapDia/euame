@@ -115,7 +115,7 @@ class EmailPhoneUserManager(models.Manager):
                               to=phone
                           )
             print(message.sid)
-            
+
         now = timezone.now()
         is_active = extra_fields.pop("is_active", False)
 
@@ -240,3 +240,37 @@ class UserAccount(models.Model):
         """ Send an email to this User."""
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
+class UserProfile(models.Model):
+    profile_family = "family"
+    profile_professional = "professional"
+    profile_mask = "mask"
+    profile_general = "general"
+    profile_choices = (('profile_family','family'),('profile_professional','professional'),('profile_mask','mask'),('profile_general','general'))
+
+    profile_type = models.CharField(choices=profile_choices)
+    account = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
+
+    is_active = models.BooleanField(
+        _('active'), default=False, help_text=_(
+            'Designates whether this profile should be treated as active. '
+            'Unselect this instead of deleting accounts.'))
+
+    def __str__(self):
+        return self.profile_type
+
+    class Meta:
+        ordering = ('profile_type')
+
+class Friend(models.Model):
+    """Model to represent friendship"""
+    to_profile = models.ForeignKey(UserProfile, models.CASCADE, related_name='friends')
+    from_profile = models.ForeignKey(UserProfile, models.CASCADE, related_name='_unused_friend_relation')
+    created = models.DateTimeField(default=timezone.now())
+
+    class Meta:
+        verbose_name = _('Friend')
+        verbose_name_plural = _('Friends')
+        unique_together = ('from_profile', 'to_profile')
+
+    def __str__(self):
+        return "Profile #%s is friend with #%s" %(self.to_profile_id, self.from_profile_id)

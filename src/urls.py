@@ -32,4 +32,7 @@ urlpatterns = [
     re_path(r'^api/v1/useraccount/lostpasswordverifycode/', api.LostPasswordVerifyCode.as_view()),
     re_path(r'^api/v1/useraccount/changepassword/', api.ChangePassword.as_view()),
     re_path(r'^api/v1/useraccount/resendcode/', api.ResendCode.as_view()),
+    re_path(r'^api/v1/useraccount/activateprofile/', api.ActivateProfile.as_view()),
+    re_path(r'^api/v1/useraccount/sendprofilecode/', api.SendProfileCoe.as_view()),
+    re_path(r'^api/v1/useraccount/addfriend/', api.AddFriend.as_view()),    
 ]
