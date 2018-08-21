@@ -116,7 +116,7 @@ class LostPassword(APIView):
         try:
             if request.META.get('CONTENT_TYPE') == "application/json":
                 if "username" in request.data and "username_type" in request.data:
-                    if UserAccount.objects.get(email_or_phone=request.data['username']) is None:
+                    if not UserAccount.objects.filter(email_or_phone=request.data['username']):
                         return Response({'status':"user_not_exist"}, status=207)
                     signup_code = UserAccount.objects.get(email_or_phone=request.data['username']).signup_code
                     if request.data['username_type'] == "email":
