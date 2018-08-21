@@ -44,8 +44,8 @@ class AccountSignup(APIView):
                         professional_profile = UserProfile.objects.create(account=account,profile_type="professional")
                         mask_profile = UserProfile.objects.create(account=account,profile_type="mask")
                         general_profile = UserProfile.objects.create(account=account,profile_type="general")
-                        return Response({'status':"success",'userid':account.pk,"familyprofileid":family_profile.pk,"professionalprofileid":professional_profile.pk
-                            , "maskprofileid":mask_profile.pk, "generalprofileid":general_profile.pk}, status=status.HTTP_200_OK)
+                        return Response({'status':"success",'userid':str(account.pk),"familyprofileid":family_profile.pk,"professionalprofileid":str(professional_profile.pk)
+                            , "maskprofileid":str(mask_profile.pk), "generalprofileid":str(general_profile.pk)}, status=status.HTTP_200_OK)
                 else:
                     return Response({'status':"missing_params"}, status=589)
             else:
@@ -68,7 +68,12 @@ class AccountSignin(APIView):
                             account = UserAccount.objects.get(email_or_phone=request.data['username'])
                             account.signed_in = True
                             account.save()
-                            return Response({'status':"success","userid":user.pk,"fullname":account.fullname}, 
+                            family_profile = UserProfile.objects.get(account=account,profile_type="family")
+                            professional_profile = UserProfile.objects.get(account=account,profile_type="professional")
+                            mask_profile = UserProfile.objects.get(account=account,profile_type="mask")
+                            general_profile = UserProfile.objects.get(account=account,profile_type="general")
+                            return Response({'status':"success",'userid':str(account.pk),"familyprofileid":family_profile.pk,"professionalprofileid":str(professional_profile.pk)
+                            , "maskprofileid":str(mask_profile.pk), "generalprofileid":str(general_profile.pk),"fullname":account.fullname}, 
                                 status=status.HTTP_200_OK)
                         else:
                             return Response({'status':"password_incorrect"}, status=590)
