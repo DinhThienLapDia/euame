@@ -37,7 +37,7 @@ class UserProfile(models.Model):
 
     profile_type = models.CharField(choices=profile_choices,max_length=255)
     account = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='account',on_delete=models.CASCADE)
+        UserAccount, related_name='account',on_delete=models.CASCADE)
 
     is_active = models.BooleanField(
         _('active'), default=False, help_text=_(
