@@ -469,13 +469,22 @@ class Notifications(APIView):
     #permision_classes = 
     #rendered_classes = 
     def post(self, request, format = None):
-        if request.META.get('CONTENT_TYPE') == "application/json":
-            if (request.data['username'] and request.data['password']):
-                pass
+        try:
+            if request.META.get('CONTENT_TYPE') == "application/json":
+                if "userid" in request.data and "profileid" in request.data:
+                    #enricher = Enrich(User.objects.get(pk=request.data['userid']))
+                    #context = {}
+                    notifications = feed_manager.get_notification_feed(user_id)
+                    activities = notifications.get(limit=25)['results']
+                    #context['activities'] = enricher.enrich_aggregated_activities(activities)
+                    return Response({'status':"success",'feed':notifications}, status=status.HTTP_200_OK) 
+                else:
+                    return Response({'status':"missing_params"}, status=400)
             else:
-                return Response({'status':"missing_params"}, status=400)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print(e)
+            return Response({'status':"server_exception",'details':str(e)}, status=501)
 
 class GetProfilesCode(APIView):
     #authentication_classes = 
