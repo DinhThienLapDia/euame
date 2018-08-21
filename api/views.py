@@ -21,6 +21,9 @@ from api.enrich import Enrich
 from api.enrich import did_i_feed_items
 from api.enrich import do_i_friend_users
 
+import json
+from django.core.serializers.json import DjangoJSONEncoder
+
 class AccountSignup(APIView):
     #authentication_classes = TokenAuthentication
     #permision_classes = 
@@ -476,6 +479,7 @@ class Notifications(APIView):
                     #context = {}
                     notifications = feed_manager.get_notification_feed(request.data['userid'])
                     activities = notifications.get(limit=25)['results']
+                    activities = json.dumps([a.activity_data for a in activities], cls=DjangoJSONEncoder)
                     #context['activities'] = enricher.enrich_aggregated_activities(activities)
                     return Response({'status':"success",'feed':notifications}, status=status.HTTP_200_OK) 
                 else:
