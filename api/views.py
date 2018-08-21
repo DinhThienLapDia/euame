@@ -405,12 +405,12 @@ class NewsFeed(APIView):
         try:
             if request.META.get('CONTENT_TYPE') == "application/json":
                 if "userid" in request.data and "profileid" in request.data:
-                    #enricher = Enrich(User.objects.get(pk=request.data['userid']))
-                    #context = {}
+                    enricher = Enrich(User.objects.get(pk=request.data['userid']))
+                    context = {}
                     feed = feed_manager.get_news_feeds(request.data['profileid'])['timeline_aggregated']
                     activities = feed.get(limit=25)['results']
-                    #context['activities'] = enricher.enrich_aggregated_activities(activities)
-                    return Response({'status':"success",'feed':activities}, status=status.HTTP_200_OK) 
+                    context['activities'] = enricher.enrich_aggregated_activities(activities)
+                    return Response({'status':"success",'feed':context}, status=status.HTTP_200_OK) 
                 else:
                     return Response({'status':"missing_params"}, status=400)
             else:
@@ -476,13 +476,13 @@ class Notifications(APIView):
         try:
             if request.META.get('CONTENT_TYPE') == "application/json":
                 if "userid" in request.data and "profileid" in request.data:
-                    #enricher = Enrich(User.objects.get(pk=request.data['userid']))
-                    #context = {}
+                    enricher = Enrich(User.objects.get(pk=request.data['userid']))
+                    context = {}
                     notifications = feed_manager.get_notification_feed(request.data['userid'])
                     activities = notifications.get(limit=25)['results']
                     activities =  serializers.serialize('json', activities)
-                    #context['activities'] = enricher.enrich_aggregated_activities(activities)
-                    return Response({'status':"success",'notifications':notifications}, status=status.HTTP_200_OK) 
+                    context['activities'] = enricher.enrich_aggregated_activities(activities)
+                    return Response({'status':"success",'notifications':context}, status=status.HTTP_200_OK) 
                 else:
                     return Response({'status':"missing_params"}, status=400)
             else:
