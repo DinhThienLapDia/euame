@@ -28,16 +28,40 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
 
+class UserProfile(models.Model):
+    profile_family = "family"
+    profile_professional = "professional"
+    profile_mask = "mask"
+    profile_general = "general"
+    profile_choices = (('profile_family','family'),('profile_professional','professional'),('profile_mask','mask'),('profile_general','general'))
+
+    profile_type = models.CharField(choices=profile_choices,max_length=255)
+    account = models.ForeignKey(
+        settings.AUTH_USER_MODEL, related_name='account',on_delete=models.CASCADE)
+
+    is_active = models.BooleanField(
+        _('active'), default=False, help_text=_(
+            'Designates whether this profile should be treated as active. '
+            'Unselect this instead of deleting accounts.'))
+
+    def __str__(self):
+        return self.profile_type
+
+    class Meta:
+        ordering = ["profile_type"]
+
+
+
 
 class Post(BaseModel):
-    userprofile = models.ForeignKey(UserProfile,on_delete=models.CASCADE)
+    userprofile = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='postimages/%Y/%m/%d')
     source_url = models.TextField()
     message = models.TextField(blank=True, null=True)
     pin_count = models.IntegerField(default=0)
 
 class Feed(Activity, BaseModel):
-    user = models.ForeignKey(UserProfile,on_delete=models.CASCADE)
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     item = models.ForeignKey(Post, on_delete=models.CASCADE)
     influencer = models.ForeignKey(
         settings.AUTH_USER_MODEL, related_name='influenced_pins',on_delete=models.CASCADE)
@@ -315,26 +339,4 @@ class UserAccount(models.Model):
     def email_user(self, subject, message, from_email=None, **kwargs):
         """ Send an email to this User."""
         send_mail(subject, message, from_email, [self.email], **kwargs)
-
-class UserProfile(models.Model):
-    profile_family = "family"
-    profile_professional = "professional"
-    profile_mask = "mask"
-    profile_general = "general"
-    profile_choices = (('profile_family','family'),('profile_professional','professional'),('profile_mask','mask'),('profile_general','general'))
-
-    profile_type = models.CharField(choices=profile_choices,max_length=255)
-    account = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='account',on_delete=models.CASCADE)
-
-    is_active = models.BooleanField(
-        _('active'), default=False, help_text=_(
-            'Designates whether this profile should be treated as active. '
-            'Unselect this instead of deleting accounts.'))
-
-    def __str__(self):
-        return self.profile_type
-
-    class Meta:
-        ordering = ["profile_type"]
 
