@@ -384,8 +384,8 @@ class NewPost(APIView):
                     if request.FILES.get('filepath') == None:
                         pass
                     else:
-                        user = User.objects.get(pk=request.data['userid'])
-                        post = Post.objects.create(user=user,message=request.data['postmessage'],image=request.data['file'])
+                        userprofile = UserProfile.objects.get(pk=request.data['profileid'])
+                        post = Post.objects.create(userprofile=userprofile,message=request.data['postmessage'],image=request.data['file'])
                         post.save()
                     return Response({'status':"success"}, status=status.HTTP_200_OK) 
                 else:
