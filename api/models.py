@@ -38,7 +38,7 @@ class Post(BaseModel):
 
 class Feed(Activity, BaseModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
-    item = models.ForeignKey(Post)
+    item = models.ForeignKey(Post, on_delete=models.CASCADE)
     influencer = models.ForeignKey(
         settings.AUTH_USER_MODEL, related_name='influenced_pins',on_delete=models.CASCADE)
     message = models.TextField(blank=True, null=True)
