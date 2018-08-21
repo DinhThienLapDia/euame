@@ -480,9 +480,9 @@ class Notifications(APIView):
                     #context = {}
                     notifications = feed_manager.get_notification_feed(request.data['userid'])
                     activities = notifications.get(limit=25)['results']
-                    activities = data = serializers.serialize('json', activities)
+                    activities =  serializers.serialize('json', activities)
                     #context['activities'] = enricher.enrich_aggregated_activities(activities)
-                    return Response({'status':"success",'feed':notifications}, status=status.HTTP_200_OK) 
+                    return Response({'status':"success",'notifications':notifications}, status=status.HTTP_200_OK) 
                 else:
                     return Response({'status':"missing_params"}, status=400)
             else:
