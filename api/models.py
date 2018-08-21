@@ -21,99 +21,6 @@ from stream_django.feed_manager import feed_manager
 
 from django.conf import settings
 
-class BaseModel(models.Model):
-    created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
-    deleted_at = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        abstract = True
-
-class UserProfile(models.Model):
-    profile_family = "family"
-    profile_professional = "professional"
-    profile_mask = "mask"
-    profile_general = "general"
-    profile_choices = (('profile_family','family'),('profile_professional','professional'),('profile_mask','mask'),('profile_general','general'))
-
-    profile_type = models.CharField(choices=profile_choices,max_length=255)
-    account = models.ForeignKey(
-        UserAccount, related_name='account',on_delete=models.CASCADE)
-
-    is_active = models.BooleanField(
-        _('active'), default=False, help_text=_(
-            'Designates whether this profile should be treated as active. '
-            'Unselect this instead of deleting accounts.'))
-
-    def __str__(self):
-        return self.profile_type
-
-    class Meta:
-        ordering = ["profile_type"]
-
-
-
-
-class Post(BaseModel):
-    userprofile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, default=None)
-    image = models.ImageField(upload_to='postimages/%Y/%m/%d')
-    source_url = models.TextField()
-    message = models.TextField(blank=True, null=True)
-    pin_count = models.IntegerField(default=0)
-
-class Feed(Activity, BaseModel):
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, default=None)
-    item = models.ForeignKey(Post, on_delete=models.CASCADE)
-    influencer = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='influenced_pins',on_delete=models.CASCADE)
-    message = models.TextField(blank=True, null=True)
-
-    @classmethod
-    def activity_related_models(cls):
-        return ['user', 'post']
-
-    @property
-    def activity_object_attr(self):
-        return self
-
-    @property
-    def extra_activity_data(self):
-        return dict(item_id=self.item_id)
-
-    @property
-    def activity_notify(self):
-        target_feed = feed_manager.get_notification_feed(self.friend_id)
-        return [target_feed]
-
-
-class Friend(Activity, BaseModel):
-    '''
-    A simple table mapping who a user is following.
-    For example, if user is Kyle and Kyle is following Alex,
-    the target would be Alex.
-    '''
-    user = models.ForeignKey(
-        UserProfile, related_name='following_set',on_delete=models.CASCADE, default=None)
-    friend = models.ForeignKey(
-        UserProfile, related_name='follower_set',on_delete=models.CASCADE, default=None)
-
-    @classmethod
-    def activity_related_models(cls):
-        return ['user', 'friend']
-
-    @property
-    def activity_object_attr(self):
-        return self
-
-    @property
-    def activity_notify(self):
-        target_feed = feed_manager.get_notification_feed(self.friend_id)
-        return [target_feed]
-
-
-
-def soft_delete(sender, instance, **kwargs):
-    if instance.deleted_at is not None:
-        feed_manager.activity_delete(sender, instance, **kwargs)
 
 
 
@@ -340,3 +247,96 @@ class UserAccount(models.Model):
         """ Send an email to this User."""
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
+class BaseModel(models.Model):
+    created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
+    deleted_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        abstract = True
+
+class UserProfile(models.Model):
+    profile_family = "family"
+    profile_professional = "professional"
+    profile_mask = "mask"
+    profile_general = "general"
+    profile_choices = (('profile_family','family'),('profile_professional','professional'),('profile_mask','mask'),('profile_general','general'))
+
+    profile_type = models.CharField(choices=profile_choices,max_length=255)
+    account = models.ForeignKey(
+        UserAccount, related_name='account',on_delete=models.CASCADE)
+
+    is_active = models.BooleanField(
+        _('active'), default=False, help_text=_(
+            'Designates whether this profile should be treated as active. '
+            'Unselect this instead of deleting accounts.'))
+
+    def __str__(self):
+        return self.profile_type
+
+    class Meta:
+        ordering = ["profile_type"]
+
+
+
+
+class Post(BaseModel):
+    userprofile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, default=None)
+    image = models.ImageField(upload_to='postimages/%Y/%m/%d')
+    source_url = models.TextField()
+    message = models.TextField(blank=True, null=True)
+    pin_count = models.IntegerField(default=0)
+
+class Feed(Activity, BaseModel):
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, default=None)
+    item = models.ForeignKey(Post, on_delete=models.CASCADE)
+    influencer = models.ForeignKey(
+        settings.AUTH_USER_MODEL, related_name='influenced_pins',on_delete=models.CASCADE)
+    message = models.TextField(blank=True, null=True)
+
+    @classmethod
+    def activity_related_models(cls):
+        return ['user', 'post']
+
+    @property
+    def activity_object_attr(self):
+        return self
+
+    @property
+    def extra_activity_data(self):
+        return dict(item_id=self.item_id)
+
+    @property
+    def activity_notify(self):
+        target_feed = feed_manager.get_notification_feed(self.friend_id)
+        return [target_feed]
+
+
+class Friend(Activity, BaseModel):
+    '''
+    A simple table mapping who a user is following.
+    For example, if user is Kyle and Kyle is following Alex,
+    the target would be Alex.
+    '''
+    user = models.ForeignKey(
+        UserProfile, related_name='following_set',on_delete=models.CASCADE, default=None)
+    friend = models.ForeignKey(
+        UserProfile, related_name='follower_set',on_delete=models.CASCADE, default=None)
+
+    @classmethod
+    def activity_related_models(cls):
+        return ['user', 'friend']
+
+    @property
+    def activity_object_attr(self):
+        return self
+
+    @property
+    def activity_notify(self):
+        target_feed = feed_manager.get_notification_feed(self.friend_id)
+        return [target_feed]
+
+
+
+def soft_delete(sender, instance, **kwargs):
+    if instance.deleted_at is not None:
+        feed_manager.activity_delete(sender, instance, **kwargs)
