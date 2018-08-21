@@ -422,4 +422,17 @@ class LikePost(APIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+class Notifications(APIView):
+    #authentication_classes = 
+    #permision_classes = 
+    #rendered_classes = 
+    def post(self, request, format = None):
+        if request.META.get('CONTENT_TYPE') == "application/json":
+            if (request.data['username'] and request.data['password']):
+                pass
+            else:
+                return Response({'status':"missing_params"}, status=400)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
 
