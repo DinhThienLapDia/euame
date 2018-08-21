@@ -136,7 +136,7 @@ class LostPassword(APIView):
                         ],
                         "Subject": "Your euame account recovery code",
                         "TextPart": "your recovery code is: " + signup_code,
-                        "HTMLPart": "<h3>Dear new customer, your account verification code is:" + signup_code +"</h3><br />please fill your code in the verfication screen of euame app"
+                        "HTMLPart": "<h3>Dear new customer, your account recovery code is:" + signup_code +"</h3><br />please fill your code in the verfication screen of euame app"
                     }
                     ]
                     }
@@ -341,13 +341,44 @@ class SendProfileCode(APIView):
     #permision_classes = 
     #rendered_classes = 
     def post(self, request, format = None):
-        if request.META.get('CONTENT_TYPE') == "application/json":
-            if (request.data['username'] and request.data['password']):
-                pass
+        try:
+            if request.META.get('CONTENT_TYPE') == "application/json":
+                if "fullname" in request.data and "profileid" in request.data and "profilecode" in request.data and "type" in request.dat and "to" in request.data:
+                    
+                    if request.data['type'] == "email":
+                        mailjet = send_email()
+                        data = {
+                    'Messages': [
+                    {
+                        "From": {
+                                "Email": "vneroica@gmail.com",
+                                "Name": "euame"
+                        },
+                        "To": [
+                                {
+                                        "Email": request.data['to'],
+                                        "Name": "Euame Customer"
+                                }
+                        ],
+                        "Subject": request.data['fullname'] + " sent you a code add friend at euame",
+                        "TextPart": "your friend code: " + request.data['profilecode'],
+                        "HTMLPart": "<h3>Dear new customer, your friend code:" + request.data['profilecode'] +"</h3><br />please fill your code in the add friend screen of euame app"
+                    }
+                    ]
+                    }
+                        result = mailjet.send.create(data=data)
+                        return Response({'status':"success"}, status=status.HTTP_200_OK)
+                    if request.data['type'] == "phone":
+                        content = "your verification code is " + signup_code 
+                        send_sms(phone_number=request.data['username'],content=content)
+                        return Response({'status':"success"}, status=status.HTTP_200_OK)
+                else:
+                    return Response({'status':"missing_params"},status=status.HTTP_400_BAD_REQUEST)
             else:
-                return Response({'status':"missing_params"}, status=400)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print(e)
+            return Response({'status':"server_exception",'details':str(e)}, status=501)
 
 class AddFriend(APIView):
     #authentication_classes = 
