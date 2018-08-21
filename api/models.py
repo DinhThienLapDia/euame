@@ -54,14 +54,14 @@ class UserProfile(models.Model):
 
 
 class Post(BaseModel):
-    userprofile = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    userprofile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, default=None)
     image = models.ImageField(upload_to='postimages/%Y/%m/%d')
     source_url = models.TextField()
     message = models.TextField(blank=True, null=True)
     pin_count = models.IntegerField(default=0)
 
 class Feed(Activity, BaseModel):
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, default=None)
     item = models.ForeignKey(Post, on_delete=models.CASCADE)
     influencer = models.ForeignKey(
         settings.AUTH_USER_MODEL, related_name='influenced_pins',on_delete=models.CASCADE)
@@ -92,9 +92,9 @@ class Friend(Activity, BaseModel):
     the target would be Alex.
     '''
     user = models.ForeignKey(
-        UserProfile, related_name='following_set',on_delete=models.CASCADE)
+        UserProfile, related_name='following_set',on_delete=models.CASCADE, default=None)
     friend = models.ForeignKey(
-        UserProfile, related_name='follower_set',on_delete=models.CASCADE)
+        UserProfile, related_name='follower_set',on_delete=models.CASCADE, default=None)
 
     @classmethod
     def activity_related_models(cls):
