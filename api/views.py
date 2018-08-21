@@ -358,10 +358,10 @@ class NewsFeed(APIView):
     def post(self, request, format = None):
         try:
             if request.META.get('CONTENT_TYPE') == "application/json":
-                if "userid" in request.data:
+                if "userid" in request.data and "profileid" in request.data:
                     #enricher = Enrich(User.objects.get(pk=request.data['userid']))
                     #context = {}
-                    feed = feed_manager.get_news_feeds(request.data['userid'])['timeline_aggregated']
+                    feed = feed_manager.get_news_feeds(request.data['profileid'])['timeline_aggregated']
                     activities = feed.get(limit=25)['results']
                     #context['activities'] = enricher.enrich_aggregated_activities(activities)
                     return Response({'status':"success",'feed':activities}, status=status.HTTP_200_OK) 
@@ -380,13 +380,13 @@ class NewPost(APIView):
     def post(self, request, format = None):
         try:
             if request.META.get('CONTENT_TYPE') == "application/json":
-                if "userid" in request.data and "postmessage" and "file" in request.data:
+                if "userid" in request.data and "postmessage" and "file" in request.data and "profileid" in request.data:
                     if request.FILES.get('filepath') == None:
                         pass
                     else:
                         user = User.objects.get(pk=request.data['userid'])
                         post = Post.objects.create(user=user,message=request.data['postmessage'],image=request.data['file'])
-                    return Response({'status':"success",'feed':activities}, status=status.HTTP_200_OK) 
+                    return Response({'status':"success"}, status=status.HTTP_200_OK) 
                 else:
                     return Response({'status':"missing_params"}, status=400)
             else:

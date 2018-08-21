@@ -30,14 +30,14 @@ class BaseModel(models.Model):
 
 
 class Post(BaseModel):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
+    userprofile = models.ForeignKey(UserProfile,on_delete=models.CASCADE)
     image = models.ImageField(upload_to='postimages/%Y/%m/%d')
     source_url = models.TextField()
     message = models.TextField(blank=True, null=True)
     pin_count = models.IntegerField(default=0)
 
 class Feed(Activity, BaseModel):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
+    user = models.ForeignKey(UserProfile,on_delete=models.CASCADE)
     item = models.ForeignKey(Post, on_delete=models.CASCADE)
     influencer = models.ForeignKey(
         settings.AUTH_USER_MODEL, related_name='influenced_pins',on_delete=models.CASCADE)
@@ -68,9 +68,9 @@ class Friend(Activity, BaseModel):
     the target would be Alex.
     '''
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='following_set',on_delete=models.CASCADE)
+        UserProfile, related_name='following_set',on_delete=models.CASCADE)
     friend = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='follower_set',on_delete=models.CASCADE)
+        UserProfile, related_name='follower_set',on_delete=models.CASCADE)
 
     @classmethod
     def activity_related_models(cls):
@@ -324,7 +324,8 @@ class UserProfile(models.Model):
     profile_choices = (('profile_family','family'),('profile_professional','professional'),('profile_mask','mask'),('profile_general','general'))
 
     profile_type = models.CharField(choices=profile_choices,max_length=255)
-    account = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
+    account = models.ForeignKey(
+        settings.AUTH_USER_MODEL, related_name='account',on_delete=models.CASCADE)
 
     is_active = models.BooleanField(
         _('active'), default=False, help_text=_(
