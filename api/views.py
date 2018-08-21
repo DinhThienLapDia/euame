@@ -18,8 +18,8 @@ from .utils import send_email, send_sms
 from stream_django.feed_manager import feed_manager
 
 from api.enrich import Enrich
-from api.enrich import did_i_pin_items
-from api.enrich import do_i_follow_user
+from api.enrich import did_i_feed_items
+from api.enrich import do_i_friend_user
 
 class AccountSignup(APIView):
     #authentication_classes = TokenAuthentication
