@@ -16,6 +16,80 @@ from mailjet_rest import Client
 
 from twilio.rest import Client as Twilio
 
+from stream_django.activity import Activity
+from stream_django.feed_manager import feed_manager
+
+class BaseModel(models.Model):
+    created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
+    deleted_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        abstract = True
+
+
+class Post(BaseModel):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    image = models.ImageField(upload_to='postimages/%Y/%m/%d')
+    source_url = models.TextField()
+    message = models.TextField(blank=True, null=True)
+    pin_count = models.IntegerField(default=0)
+
+class Feed(Activity, BaseModel):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    item = models.ForeignKey(Post)
+    influencer = models.ForeignKey(
+        settings.AUTH_USER_MODEL, related_name='influenced_pins')
+    message = models.TextField(blank=True, null=True)
+
+    @classmethod
+    def activity_related_models(cls):
+        return ['user', 'post']
+
+    @property
+    def activity_object_attr(self):
+        return self
+
+    @property
+    def extra_activity_data(self):
+        return dict(item_id=self.item_id)
+
+    @property
+    def activity_notify(self):
+        target_feed = feed_manager.get_notification_feed(self.friend_id)
+        return [target_feed]
+
+
+class Friend(Activity, BaseModel):
+    '''
+    A simple table mapping who a user is following.
+    For example, if user is Kyle and Kyle is following Alex,
+    the target would be Alex.
+    '''
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, related_name='following_set')
+    friend = models.ForeignKey(
+        settings.AUTH_USER_MODEL, related_name='follower_set')
+
+    @classmethod
+    def activity_related_models(cls):
+        return ['user', 'friend']
+
+    @property
+    def activity_object_attr(self):
+        return self
+
+    @property
+    def activity_notify(self):
+        target_feed = feed_manager.get_notification_feed(self.friend_id)
+        return [target_feed]
+
+
+
+def soft_delete(sender, instance, **kwargs):
+    if instance.deleted_at is not None:
+        feed_manager.activity_delete(sender, instance, **kwargs)
+
+
 
 class EmailPhoneUserManager(models.Manager):
 
@@ -261,16 +335,3 @@ class UserProfile(models.Model):
     class Meta:
         ordering = ["profile_type"]
 
-class Friend(models.Model):
-    """Model to represent friendship"""
-    to_profile = models.ForeignKey(UserProfile, models.CASCADE, related_name='friends')
-    from_profile = models.ForeignKey(UserProfile, models.CASCADE, related_name='_unused_friend_relation')
-    created = models.DateTimeField(default=timezone.now)
-
-    class Meta:
-        verbose_name = _('Friend')
-        verbose_name_plural = _('Friends')
-        unique_together = ('from_profile', 'to_profile')
-
-    def __str__(self):
-        return "Profile #%s is friend with #%s" %(self.to_profile_id, self.from_profile_id)

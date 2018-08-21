@@ -12,8 +12,14 @@ from rest_framework.response import Response
 
 from datetime import datetime
 
-from .models import UserAccount
+from .models import *
 from .utils import send_email, send_sms
+
+from stream_django.feed_manager import feed_manager
+
+from api.enrich import Enrich
+from api.enrich import did_i_pin_items
+from api.enrich import do_i_follow_user
 
 class AccountSignup(APIView):
     #authentication_classes = TokenAuthentication
@@ -345,6 +351,74 @@ class AddFriend(APIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+class NewsFeed(APIView):
+    #authentication_classes = 
+    #permision_classes = 
+    #rendered_classes = 
+    def post(self, request, format = None):
+        try:
+            if request.META.get('CONTENT_TYPE') == "application/json":
+                if "userid" in request.data:
+                    #enricher = Enrich(User.objects.get(pk=request.data['userid']))
+                    #context = {}
+                    feed = feed_manager.get_news_feeds(request.data['userid'])['timeline_aggregated']
+                    activities = feed.get(limit=25)['results']
+                    #context['activities'] = enricher.enrich_aggregated_activities(activities)
+                    return Response({'status':"success",'feed':activities}, status=status.HTTP_200_OK) 
+                else:
+                    return Response({'status':"missing_params"}, status=400)
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print(e)
+            return Response({'status':"server_exception",'details':str(e)}, status=501)
 
+class NewPost(APIView):
+    #authentication_classes = 
+    #permision_classes = 
+    #rendered_classes = 
+    def post(self, request, format = None):
+        try:
+            if request.META.get('CONTENT_TYPE') == "application/json":
+                if "userid" in request.data and "postmessage" and "file" in request.data:
+                    if request.FILES.get('filepath') == None:
+                        pass
+                    else:
+                        user = User.objects.get(pk=request.data['userid'])
+                        post = Post.objects.create(user=user,message=request.data['postmessage'],image=request.data['file'])
+                    return Response({'status':"success",'feed':activities}, status=status.HTTP_200_OK) 
+                else:
+                    return Response({'status':"missing_params"}, status=400)
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print(e)
+            return Response({'status':"server_exception",'details':str(e)}, status=501)
+
+class CommentPost(APIView):
+    #authentication_classes = 
+    #permision_classes = 
+    #rendered_classes = 
+    def post(self, request, format = None):
+        if request.META.get('CONTENT_TYPE') == "application/json":
+            if (request.data['username'] and request.data['password']):
+                pass
+            else:
+                return Response({'status':"missing_params"}, status=400)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class LikePost(APIView):
+    #authentication_classes = 
+    #permision_classes = 
+    #rendered_classes = 
+    def post(self, request, format = None):
+        if request.META.get('CONTENT_TYPE') == "application/json":
+            if (request.data['username'] and request.data['password']):
+                pass
+            else:
+                return Response({'status':"missing_params"}, status=400)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 

@@ -38,8 +38,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'stream_django',
     'api',
 ]
+
+STREAM_API_KEY = '9pnbjttfp5uu'
+STREAM_API_SECRET = 'mh5gr7xn2s68tjcfzcj96en4tebwsb78kmgk47zm4c2vncyqd8jtdwgf5fwubjaq'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
