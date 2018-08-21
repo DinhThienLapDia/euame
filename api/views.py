@@ -386,6 +386,7 @@ class NewPost(APIView):
                     else:
                         user = User.objects.get(pk=request.data['userid'])
                         post = Post.objects.create(user=user,message=request.data['postmessage'],image=request.data['file'])
+                        post.save()
                     return Response({'status':"success"}, status=status.HTTP_200_OK) 
                 else:
                     return Response({'status':"missing_params"}, status=400)
