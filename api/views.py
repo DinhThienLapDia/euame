@@ -369,8 +369,8 @@ class SendProfileCode(APIView):
                         result = mailjet.send.create(data=data)
                         return Response({'status':"success"}, status=status.HTTP_200_OK)
                     if request.data['type'] == "phone":
-                        content = "your verification code is " + signup_code 
-                        send_sms(phone_number=request.data['username'],content=content)
+                        content = "your verification code is " + request.data['profilecode']
+                        send_sms(phone_number=request.data['to'],content=content)
                         return Response({'status':"success"}, status=status.HTTP_200_OK)
                 else:
                     return Response({'status':"missing_params"},status=status.HTTP_400_BAD_REQUEST)
