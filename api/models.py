@@ -19,6 +19,8 @@ from twilio.rest import Client as Twilio
 from stream_django.activity import Activity
 from stream_django.feed_manager import feed_manager
 
+from django.conf import settings
+
 class BaseModel(models.Model):
     created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     deleted_at = models.DateTimeField(blank=True, null=True)
@@ -28,17 +30,17 @@ class BaseModel(models.Model):
 
 
 class Post(BaseModel):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
     image = models.ImageField(upload_to='postimages/%Y/%m/%d')
     source_url = models.TextField()
     message = models.TextField(blank=True, null=True)
     pin_count = models.IntegerField(default=0)
 
 class Feed(Activity, BaseModel):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
     item = models.ForeignKey(Post)
     influencer = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='influenced_pins')
+        settings.AUTH_USER_MODEL, related_name='influenced_pins',on_delete=models.CASCADE)
     message = models.TextField(blank=True, null=True)
 
     @classmethod
@@ -66,9 +68,9 @@ class Friend(Activity, BaseModel):
     the target would be Alex.
     '''
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='following_set')
+        settings.AUTH_USER_MODEL, related_name='following_set',on_delete=models.CASCADE)
     friend = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='follower_set')
+        settings.AUTH_USER_MODEL, related_name='follower_set',on_delete=models.CASCADE)
 
     @classmethod
     def activity_related_models(cls):
