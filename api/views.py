@@ -382,11 +382,11 @@ class NewPost(APIView):
             if request.META.get('CONTENT_TYPE') == "application/json":
                 if "userid" in request.data and "postmessage" and "file" in request.data and "profileid" in request.data:
                     if request.FILES.get('filepath') == None:
-                        pass
+                        userprofile = UserProfile.objects.get(pk=request.data['profileid'])
+                        post = Post.objects.create(userprofile=userprofile,message=request.data['postmessage'],image=request.data['file'])
                     else:
                         userprofile = UserProfile.objects.get(pk=request.data['profileid'])
                         post = Post.objects.create(userprofile=userprofile,message=request.data['postmessage'],image=request.data['file'])
-                        post.save()
                     return Response({'status':"success"}, status=status.HTTP_200_OK) 
                 else:
                     return Response({'status':"missing_params"}, status=400)
