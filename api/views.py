@@ -118,7 +118,8 @@ class LostPassword(APIView):
                 if "username" in request.data and "username_type" in request.data:
                     signup_code = UserAccount.objects.get(email_or_phone=request.data['username']).signup_code
                     if request.data['username_type'] == "email":
-                        email_content = {
+                        mailjet = send_email()
+                        data = {
                     'Messages': [
                     {
                         "From": {
@@ -127,7 +128,7 @@ class LostPassword(APIView):
                         },
                         "To": [
                                 {
-                                        "Email": "",
+                                        "Email": request.data['username'],
                                         "Name": "Euame Customer"
                                 }
                         ],
@@ -137,9 +138,7 @@ class LostPassword(APIView):
                     }
                     ]
                     }
-                        email_content['Messages'][0]['To'][0]['Email'] = request.data['username']
-                        print(email_content['Messages'][0]['To'][0]['Email'])
-                        send_email(content=email_content)
+                        result = mailjet.send.create(data=data)
                         return Response({'status':"success"}, status=status.HTTP_200_OK)
                     if request.data['username_type'] == "phone":
                         content = "your verification code is " + signup_code 

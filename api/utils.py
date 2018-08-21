@@ -7,7 +7,7 @@ def send_email(content):
     api_secret = '03d7d5b3791148902dcffd64edb62dbb'
     mailjet = Client(auth=(api_key, api_secret), version='v3.1')
 
-    result = mailjet.send.create(data=content)
+    return mailjet
 
 def send_sms(phone_number,content):
     account_sid = 'AC4d3a68850fdbae49d26518b29c1e0404'
