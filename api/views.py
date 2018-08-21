@@ -68,10 +68,10 @@ class AccountSignin(APIView):
                             account = UserAccount.objects.get(email_or_phone=request.data['username'])
                             account.signed_in = True
                             account.save()
-                            family_profile = UserProfile.objects.get(account=account,profile_type="family")
-                            professional_profile = UserProfile.objects.get(account=account,profile_type="professional")
-                            mask_profile = UserProfile.objects.get(account=account,profile_type="mask")
-                            general_profile = UserProfile.objects.get(account=account,profile_type="general")
+                            family_profile = UserProfile.objects.filter(account=account,profile_type="family")[0]
+                            professional_profile = UserProfile.objects.filter(account=account,profile_type="professional")[0]
+                            mask_profile = UserProfile.objects.filter(account=account,profile_type="mask")[0]
+                            general_profile = UserProfile.objects.filter(account=account,profile_type="general")[0]
                             return Response({'status':"success",'userid':str(account.pk),"familyprofileid":family_profile.pk,"professionalprofileid":str(professional_profile.pk)
                             , "maskprofileid":str(mask_profile.pk), "generalprofileid":str(general_profile.pk),"fullname":account.fullname}, 
                                 status=status.HTTP_200_OK)
