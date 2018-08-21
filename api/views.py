@@ -465,10 +465,10 @@ class GetProfilesCode(APIView):
                     maskprofilecode = ""
                     generalprofilecode = ""
                     if family_profile.pk < 10000000:
-                        familyprofileicode = str(family_profile.pk + int(datetime.now().strtime("%H%M")))
+                        familyprofileicode = str(family_profile.pk + int(datetime.now().strftime("%H%M")))
                         professionalprofilecode = str(professional_profile.pk + int(datetime.datetime.now().strtfime("%H%M")))
-                        generalprofilecode = str(general_profile.pk + int(datetime.datetime.now().strtime("%H%M")))
-                        maskprofilecode = str(mask_profile.pk + int(datetime.datetime.now().strtime("%H%M")))
+                        generalprofilecode = str(general_profile.pk + int(datetime.datetime.now().strftime("%H%M")))
+                        maskprofilecode = str(mask_profile.pk + int(datetime.datetime.now().strftime("%H%M")))
                     else:
                         familyprofileicode = str(family_profile.pk)
                         professionalprofilecode = str(professional_profile.pk)
