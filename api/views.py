@@ -19,7 +19,7 @@ from stream_django.feed_manager import feed_manager
 
 from api.enrich import Enrich
 from api.enrich import did_i_feed_items
-from api.enrich import do_i_friend_user
+from api.enrich import do_i_friend_users
 
 class AccountSignup(APIView):
     #authentication_classes = TokenAuthentication
