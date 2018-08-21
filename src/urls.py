@@ -40,4 +40,5 @@ urlpatterns = [
     re_path(r'^api/v1/useraccount/likepost/', api.LikePost.as_view()),
     re_path(r'^api/v1/useraccount/newpost/', api.NewPost.as_view()),
     re_path(r'^api/v1/useraccount/commentpost/', api.CommentPost.as_view()), 
+    re_path(r'^api/v1/useraccount/getprofilescode/', api.GetProfilesCode.as_view()),
 ]

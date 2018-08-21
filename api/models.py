@@ -261,6 +261,8 @@ class UserProfile(models.Model):
     profile_general = "general"
     profile_choices = (('profile_family','family'),('profile_professional','professional'),('profile_mask','mask'),('profile_general','general'))
 
+    profile_code = models.CharField(_('profile_code'), max_length= 254, blank=False,null=True)
+
     profile_type = models.CharField(choices=profile_choices,max_length=255)
     account = models.ForeignKey(
         UserAccount, related_name='account',on_delete=models.CASCADE)

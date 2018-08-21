@@ -445,4 +445,51 @@ class Notifications(APIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+class GetProfilesCode(APIView):
+    #authentication_classes = 
+    #permision_classes = 
+    #rendered_classes = 
+    def post(self, request, format = None):
+        try:
+            if request.META.get('CONTENT_TYPE') == "application/json":
+                if "userid" in request.data:
+                    #enricher = Enrich(User.objects.get(pk=request.data['userid']))
+                    #context = {}
+                    account = UserAccount.objects.get(pk=request.data["userid"])
+                    family_profile = UserProfile.objects.create(account=account,profile_type="family")
+                    professional_profile = UserProfile.objects.create(account=account,profile_type="professional")
+                    mask_profile = UserProfile.objects.create(account=account,profile_type="mask")
+                    general_profile = UserProfile.objects.create(account=account,profile_type="general")
+                    familyprofileicode = ""
+                    professionalprofilecode = ""
+                    maskprofilecode = ""
+                    generalprofilecode = ""
+                    if family_profile.pk < 10000000:
+                        familyprofileicode = str(family_profile.pk + int(datetime.datetime.now().strtime("%H%M")))
+                        professionalprofilecode = str(professional_profile.pk + int(datetime.datetime.now().strtime("%H%M")))
+                        generalprofilecode = str(general_profile.pk + int(datetime.datetime.now().strtime("%H%M")))
+                        maskprofilecode = str(mask_profile.pk + int(datetime.datetime.now().strtime("%H%M")))
+                    else:
+                        familyprofileicode = str(family_profile.pk)
+                        professionalprofilecode = str(professional_profile.pk)
+                        maskprofilecode = str(mask_profile.pk)
+                        generalprofilecode = str(mask_profile.pk)
+                    family_profile.profile_code = familyprofileicode
+                    family_profile.save()
+                    professional_profile.profile_code = professionalprofilecode
+                    professional_profile.save()
+                    general_profile.profile_code = generalprofilecode
+                    general_profile.save()
+                    mask_profile.profile_code = maskprofilecode
+                    #context['activities'] = enricher.enrich_aggregated_activities(activities)
+                    return Response({'status':"success","familyprofileicode":familyprofileicode,"professionalprofilecode":professionalprofilecode
+                            , "maskprofilecode":maskprofilecode, "generalprofilecode":generalprofilecode}, status=status.HTTP_200_OK) 
+                else:
+                    return Response({'status':"missing_params"}, status=400)
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print(e)
+            return Response({'status':"server_exception",'details':str(e)}, status=501)
+
 
