@@ -474,7 +474,7 @@ class Notifications(APIView):
                 if "userid" in request.data and "profileid" in request.data:
                     #enricher = Enrich(User.objects.get(pk=request.data['userid']))
                     #context = {}
-                    notifications = feed_manager.get_notification_feed(user_id)
+                    notifications = feed_manager.get_notification_feed(request.data['userid'])
                     activities = notifications.get(limit=25)['results']
                     #context['activities'] = enricher.enrich_aggregated_activities(activities)
                     return Response({'status':"success",'feed':notifications}, status=status.HTTP_200_OK) 
