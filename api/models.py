@@ -292,7 +292,7 @@ class Feed(Activity, BaseModel):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, default=None)
     item = models.ForeignKey(Post, on_delete=models.CASCADE)
     influencer = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='influenced_pins',on_delete=models.CASCADE)
+        UserProfile, related_name='influenced_pins',on_delete=models.CASCADE)
     message = models.TextField(blank=True, null=True)
 
     @classmethod
