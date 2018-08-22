@@ -482,7 +482,7 @@ class Notifications(APIView):
                     activities = notifications.get(limit=25)['results']
                     print (activities)
                     activities =  serializers.serialize('json', activities)
-                    context['activities'] = enricher.enrich_aggregated_activities(activities)
+                    #context['activities'] = enricher.enrich_aggregated_activities(activities)
                     return Response({'status':"success",'notifications':context}, status=status.HTTP_200_OK) 
                 else:
                     return Response({'status':"missing_params"}, status=400)
